@@ -1,4 +1,5 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
 import { formatDistance } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { deleteDoc, doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
@@ -11,6 +12,7 @@ import type { Post } from "../types";
 export const PostsList = ({ item }: { item: Post }) => {
 	const { user: loggedUser } = useAuth();
 	const [likes, setLikes] = useState<number>(item.likes);
+	const navigation = useNavigation();
 
 	const formatTimePost = () => {
 		const datePost = item.created.toDate();
@@ -19,10 +21,6 @@ export const PostsList = ({ item }: { item: Post }) => {
 
 	const handleLikePost = async () => {
 		const docId = `${loggedUser?.id}_${item.id}`;
-		// await setDoc(doc(db, "likes", loggedUser?.id), {
-		// 	Name: loggedUser.name,
-		// 	createdAt: new Date(),
-		// });
 
 		const docRef = doc(db, "likes", docId);
 		const postRef = doc(db, "posts", item.id);
@@ -54,7 +52,16 @@ export const PostsList = ({ item }: { item: Post }) => {
 
 	return (
 		<View style={styles.container}>
-			<TouchableOpacity style={styles.header}>
+			<TouchableOpacity
+				style={styles.header}
+				onPress={() =>
+					// @ts-expect-error
+					navigation.navigate("PostsUser" as never, {
+						title: item.author,
+						userId: item.userId,
+					})
+				}
+			>
 				{item.avatar ? (
 					<Image source={{ uri: item.avatar }} style={styles.avatar} />
 				) : (
