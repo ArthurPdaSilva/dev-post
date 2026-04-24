@@ -7,9 +7,12 @@ import {
 	TextInput,
 	TouchableOpacity,
 } from "react-native";
+import * as Animatable from "react-native-animatable";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useAuth } from "../contexts/Auth";
 import type { UserForm } from "../types";
+
+const AnimatableTitle = Animatable.createAnimatableComponent(Text);
 
 export const AuthForm = () => {
 	const { signUp, signIn, loading } = useAuth();
@@ -46,9 +49,9 @@ export const AuthForm = () => {
 
 	return (
 		<SafeAreaView style={styles.container}>
-			<Text style={styles.title}>
+			<AnimatableTitle animation="flipInY" style={styles.title}>
 				Dev <Text style={{ color: "#E52246" }}>Post</Text>
-			</Text>
+			</AnimatableTitle>
 
 			{!isLogin && (
 				<TextInput

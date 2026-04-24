@@ -27,7 +27,10 @@ export const Home = () => {
 
 	useFocusEffect(
 		useCallback(() => {
+			let isActive = true;
 			const fetchPosts = async () => {
+				if (!isActive) return;
+
 				const q = query(
 					collection(db, "posts"),
 					orderBy("created", "desc"),
@@ -46,6 +49,10 @@ export const Home = () => {
 			};
 
 			fetchPosts();
+
+			return () => {
+				isActive = false;
+			};
 		}, []),
 	);
 

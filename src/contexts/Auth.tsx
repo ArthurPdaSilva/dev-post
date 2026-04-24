@@ -13,6 +13,7 @@ type AuthContextType = {
 	signed: boolean;
 	loading: boolean;
 	applicationLoading: boolean;
+	updateCurrentUser: (user: User) => Promise<void>;
 	signUp: (user: UserForm) => Promise<void>;
 	signIn: (user: UserForm) => Promise<void>;
 	signOut: () => Promise<void>;
@@ -23,6 +24,7 @@ export const AuthContext = createContext<AuthContextType>({
 	user: null,
 	applicationLoading: true,
 	loading: false,
+	updateCurrentUser: async () => {},
 	signUp: async () => {},
 	signIn: async () => {},
 	signOut: async () => {},
@@ -35,6 +37,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
 	const storeUser = async (user: User) => {
 		await AsyncStorage.setItem("@devpost_user", JSON.stringify(user));
+	};
+
+	const updateCurrentUser = async (user: User) => {
+		setUser(user);
+		await storeUser(user);
 	};
 
 	useEffect(() => {
@@ -62,7 +69,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 				const user = userCredential.user;
 
 				await setDoc(doc(db, "users", user.uid), {
-					Name: userForm.name,
+					name: userForm.name,
 					createdAt: new Date(),
 				})
 					.then(() => {
@@ -103,7 +110,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 							const loggedUser = {
 								id: user.uid,
 								email: userForm.email,
-								name: userData.Name ?? "",
+								name: userData.name ?? "",
 							};
 							setUser(loggedUser);
 							storeUser(loggedUser);
@@ -149,6 +156,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 				signUp,
 				signIn,
 				signOut,
+				updateCurrentUser,
 			}}
 		>
 			{children}
